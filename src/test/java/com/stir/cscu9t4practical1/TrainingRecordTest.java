@@ -48,7 +48,7 @@ public class TrainingRecordTest {
         Entry a = new Entry("Alice", 1, 2, 2003, 0, 16, 7, 3);
         TrainingRecord instance = new TrainingRecord();
         instance.addEntry(a);
-        assertEquals(instance.getNumberOfEntries(),1);
+		assertEquals(instance.getNumberOfEntries(),1);
     }
     
     /**
@@ -117,9 +117,7 @@ public class TrainingRecordTest {
     }
     
     /**
-     * Test of yet to be implemented lookupEntries, of class TrainingRecord
-     * Implement the method and then remove the "fail" line below and
-     * un-comment call to the method and the assertion line
+     * Test of lookupEntries, of class TrainingRecord
      */
     @Test
     public void testLookupEntries() {
