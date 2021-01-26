@@ -73,6 +73,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 		findAllByDate.addActionListener(this);
 		add(outputArea);
 		outputArea.setEditable(false);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(720, 200);
 		setVisible(true);
 		blankDisplay();
