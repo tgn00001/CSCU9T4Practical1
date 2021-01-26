@@ -4,8 +4,12 @@ package com.stir.cscu9t4practical1;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+import java.util.regex.Pattern;
+
 import javax.swing.*;
 import java.lang.Number;
+import java.time.Month;
+import java.time.Year;
 
 public class TrainingRecordGUI extends JFrame implements ActionListener {
 
@@ -87,7 +91,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent event) {
 		String message = "";
 		if (event.getSource() == addR) {
-			message = addEntry("generic");
+				message = addEntry("generic");
 		}
 		if (event.getSource() == lookUpByDate) {
 			message = lookupEntry();
@@ -96,41 +100,131 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 			message = findAllByDate();
 		}
 		outputArea.setText(message);
-		blankDisplay();
+		
+		// only blank the display if there are no errors the user may wish to fix and try again
+		if (!Pattern.matches(".*[ERROR].*", message)) {
+			blankDisplay();
+		}
+		
 	} // actionPerformed
 
 	public String addEntry(String what) {
-		String message = "Record added\n";
+		String message = "";
 		System.out.println("Adding " + what + " entry to the records");
+		
+		boolean isInputValid = true;
+		
+		// get name and validate it
 		String n = name.getText();
-		int m = Integer.parseInt(month.getText());
-		int d = Integer.parseInt(day.getText());
-		int y = Integer.parseInt(year.getText());
-		float km = java.lang.Float.parseFloat(dist.getText());
-		int h = Integer.parseInt(hours.getText());
-		int mm = Integer.parseInt(mins.getText());
-		int s = Integer.parseInt(secs.getText());
-		Entry e = new Entry(n, d, m, y, h, mm, s, km);
-		myAthletes.addEntry(e);
+		
+		if (n == "" || n == null) {
+			message += "ERROR: please enter a name";
+			isInputValid = false;
+		}
+		
+		try {
+			// get & validate date values
+			int m = Integer.parseInt(month.getText());
+			int d = Integer.parseInt(day.getText());
+			int y = Integer.parseInt(year.getText());
+			isInputValid &= isDateValid(d, m, y);
+			
+			// get & validate distance value
+			float km = java.lang.Float.parseFloat(dist.getText());
+			if (km < 0) {
+				message += "ERROR: value for distance must be a positive number.\n";
+				isInputValid = false;
+			}
+			
+			// get & validate time values
+			int h = Integer.parseInt(hours.getText());
+			int mm = Integer.parseInt(mins.getText());
+			if (mm < 0) {
+				message += "ERROR: value for minutes must be a positive number.\n";
+				isInputValid = false;
+			}
+			int s = Integer.parseInt(secs.getText());
+			if (s < 0) {
+				message += "ERROR: value for seconds must be a positive number.\n";
+				isInputValid = false;
+			}
+			
+			// if time entered has >59 seconds or minutes, convert time to sensible representation
+			if (s > 59) {
+				mm += s / 60;
+				s += s % 60;
+				message += "Second value larger than 59 entered. Converted seconds to minutes and seconds.";
+			}
+			if (mm > 59) {
+				h += mm / 60;
+				mm += mm % 60;
+				message += "Minute value larger than 59 entered. Converted minutes to hours and minutes.";
+			}
+			
+			// only add the entry if it is valid
+			if (isInputValid) {
+				Entry e = new Entry(n, d, m, y, h, mm, s, km);
+				myAthletes.addEntry(e);
+				message = "Record added successfully\n";
+			}
+		} catch (NumberFormatException e) {
+			message += "ERROR: Please make sure valid values are entered into all fields.";
+		}
+
 		return message;
+	}
+
+	
+	/**
+	 * Checks the given date for validity, rejecting month and day combinations that do not exist.
+	 * 
+	 * @param d day
+	 * @param m month
+	 * @param y year
+	 * 
+	 * @return whether or not the date is valid
+	 */
+	private boolean isDateValid(int d, int m, int y) {
+		boolean isValid = true;
+		try {
+			Month month = Month.of(m);
+			Year year = Year.of(y);
+			if (d > month.length(year.isLeap())) {
+				isValid = false;
+			}
+		} catch (Exception e) {
+			isValid = false;
+		}
+		return isValid;
 	}
 
 	public String lookupEntry() {
-		int m = Integer.parseInt(month.getText());
-		int d = Integer.parseInt(day.getText());
-		int y = Integer.parseInt(year.getText());
-		outputArea.setText("looking up record ...");
-		String message = myAthletes.lookupEntry(d, m, y);
-		return message;
+		int m;
+		int d;
+		int y;
+		try {
+			m = Integer.parseInt(month.getText());
+			d = Integer.parseInt(day.getText());
+			y = Integer.parseInt(year.getText());
+			outputArea.setText("looking up record ...");
+			String message = myAthletes.lookupEntry(d, m, y);
+			return message;
+		} catch (NumberFormatException e) {
+			return "ERROR: No valid date entered.";
+		}
 	}
 
 	private String findAllByDate() {
-		int m = Integer.parseInt(month.getText());
-		int d = Integer.parseInt(day.getText());
-		int y = Integer.parseInt(year.getText());
-		outputArea.setText("looking up records ...");
-		String message = myAthletes.lookupEntries(d, m, y);
-		return message;
+		try {
+			int m = Integer.parseInt(month.getText());
+			int d = Integer.parseInt(day.getText());
+			int y = Integer.parseInt(year.getText());
+			outputArea.setText("looking up records ...");
+			String message = myAthletes.lookupEntries(d, m, y);
+			return message;
+		} catch (NumberFormatException e) {
+			return "ERROR: No valid date entered.";
+		}
 	}
 
 	public void blankDisplay() {
@@ -144,8 +238,8 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 		dist.setText("");
 
 	}// blankDisplay
-		// Fills the input fields on the display for testing purposes only
-
+	
+	// Fills the input fields on the display for testing purposes only
 	public void fillDisplay(Entry ent) {
 		name.setText(ent.getName());
 		day.setText(String.valueOf(ent.getDay()));
