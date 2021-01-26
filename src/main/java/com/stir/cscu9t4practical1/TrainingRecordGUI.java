@@ -124,13 +124,8 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
     }
     
     private String findAllByDate() {
-    	int m = Integer.parseInt(month.getText());
-        int d = Integer.parseInt(day.getText());
-        int y = Integer.parseInt(year.getText());
-        outputArea.setText("looking up records ...");
-        String message = myAthletes.lookupEntries(d, m, y);
-        return message;
-    }
+  		return "Not yet implemented. This button will show all entries on a given date.";
+  	}
 
     public void blankDisplay() {
         name.setText("");

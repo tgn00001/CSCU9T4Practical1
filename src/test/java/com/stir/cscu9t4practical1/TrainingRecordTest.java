@@ -22,11 +22,11 @@ public class TrainingRecordTest {
     }
     
     @BeforeAll
-    public static void setUpClass() {
+    public void setUpClass() {
     }
     
     @AfterAll
-    public static void tearDownClass() {
+    public void tearDownClass() {
     }
     
     @BeforeEach
@@ -132,14 +132,15 @@ public class TrainingRecordTest {
         Entry b = new Entry("Bob", 1, 2, 2003, 0, 14, 15, 3);
         instance.addEntry(a);
         instance.addEntry(b);
+        fail("This method cannot be tested as it does not exist yet");
         int d = 1;
         int m = 2;
         int y = 2003;
-
-        String resultSuccess = instance.lookupEntries(d,m,y);
-        String resultNone = instance.lookupEntries(d,m,1999);
-        assertEquals(expectResultsNone,resultNone);
-        assertEquals(expectResults,resultSuccess);
+        // un-comment the lines below when you've implemented the method
+//        String resultSuccess = instance.lookupEntries(d,m,y);
+//        String resultNone = instance.lookupEntries(d,m,1999);
+//        assertEquals(expectResultsNone,resultNone);
+//        assertEquals(expectResults,resultSuccess);
     }
     
 }
