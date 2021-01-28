@@ -59,6 +59,28 @@ public class TrainingRecord {
 		}
 		return result;
 	}
+	
+	/**
+	 * Checks if an entry exists for the athlete named "n" on date "d"/"m"/"y" in the training record.
+	 * 
+	 * @param n name of the athlete
+	 * @param d day
+	 * @param m month
+	 * @param y year
+	 * @return boolean true if found, false if not
+	 */
+	public boolean doesEntryExist(String n, int d, int m, int y) {
+		ListIterator<Entry> iter = tr.listIterator();
+		boolean found = false;
+		while (iter.hasNext() && !found) {
+			Entry current = iter.next();
+			if (current.getDay() == d && current.getMonth() == m
+					&& current.getYear() == y && current.getName().equals(n)) {
+				found = true;
+			}
+		}
+		return found;
+	}
 
 	/**
 	 * Counts the number of entries in the record.

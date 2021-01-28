@@ -152,9 +152,15 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 			
 			// only add the entry if it is valid
 			if (isInputValid) {
-				Entry e = new Entry(n, d, m, y, h, mm, s, km);
-				myAthletes.addEntry(e);
-				message = "Record added successfully\n";
+				// only add entry if no run exists in the training record for this athlete on this day
+				if (myAthletes.lookupEntry(d, m, y).equals("No entries found") || !myAthletes.doesEntryExist(n, d, m, y)) {
+					Entry e = new Entry(n, d, m, y, h, mm, s, km);
+					myAthletes.addEntry(e);
+					message = "Record added successfully\n";
+				}
+				else {
+					message = "ERROR: cannot add run twice.\n";
+				}
 			}
 		} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
 			message += "ERROR: Please make sure valid values are entered into all fields.\n";
