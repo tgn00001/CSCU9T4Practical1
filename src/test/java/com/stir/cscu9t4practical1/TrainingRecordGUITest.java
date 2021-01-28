@@ -6,7 +6,6 @@
  */
 package com.stir.cscu9t4practical1;
 
-import java.awt.event.ActionEvent;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,21 +85,21 @@ public class TrainingRecordGUITest {
 	public void testAddEntry() {
 		System.out.println("addEntry");
 		TrainingRecordGUI instance = new TrainingRecordGUI();
-		Entry entry = new Entry("Alice", 1, 2, 2003, 0, 16, 7, 3);
+		Entry entry = new RunEntry("Alice", 1, 2, 2003, 0, 16, 7, 3);
 		instance.fillDisplay(entry);
 		String message = instance.addEntry("generic");
 		System.out.println(message);
 		assertEquals(message, "Record added successfully\n");
 		
 		// test name validation
-		entry = new Entry("", 1, 2, 2003, 0, 16, 7, 3);
+		entry = new RunEntry("", 1, 2, 2003, 0, 16, 7, 3);
 		instance.fillDisplay(entry);
 		message = instance.addEntry("generic");
 		System.out.println(message);
 		assertEquals("ERROR: please enter a name\n", message);
 		
 		// test distance validation
-		entry = new Entry("Belice", 1, 2, 2003, 0, 16, 7, -3);
+		entry = new RunEntry("Belice", 1, 2, 2003, 0, 16, 7, -3);
 		instance.fillDisplay(entry);
 		message = instance.addEntry("generic");
 		System.out.println(message);

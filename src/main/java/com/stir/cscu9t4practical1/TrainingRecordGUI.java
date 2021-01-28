@@ -7,10 +7,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 import javax.swing.*;
-import java.lang.Number;
-import java.time.Month;
-import java.time.Year;
 
+@SuppressWarnings("serial")
 public class TrainingRecordGUI extends JFrame implements ActionListener {
 
 	private JTextField name = new JTextField(30);
@@ -37,6 +35,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 
 	private JTextArea outputArea = new JTextArea(5, 50);
 
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		TrainingRecordGUI applic = new TrainingRecordGUI();
 	} // main
@@ -134,14 +133,14 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 			int mm = Integer.parseInt(mins.getText());
 			int s = Integer.parseInt(secs.getText());
 			
-			GregorianCalendar time = new GregorianCalendar(y, m - 1, d, h, mm, s);
+			GregorianCalendar time = new GregorianCalendar();
 			time.setLenient(false);
-			time.get(Calendar.YEAR);
-			time.get(Calendar.MONTH);
-			time.get(Calendar.DAY_OF_MONTH);
-			time.get(Calendar.HOUR_OF_DAY);
-			time.get(Calendar.MINUTE);
-			time.get(Calendar.SECOND);
+			time.set(Calendar.YEAR, y);
+			time.set(Calendar.MONTH, m-1);
+			time.set(Calendar.DAY_OF_MONTH, d);
+			time.set(Calendar.HOUR_OF_DAY, h);
+			time.set(Calendar.MINUTE, mm);
+			time.set(Calendar.SECOND, s);
 			
 			// get & validate distance value
 			float km = java.lang.Float.parseFloat(dist.getText());
@@ -154,7 +153,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 			if (isInputValid) {
 				// only add entry if no run exists in the training record for this athlete on this day
 				if (myAthletes.lookupEntry(d, m, y).equals("No entries found") || !myAthletes.doesEntryExist(n, d, m, y)) {
-					Entry e = new Entry(n, d, m, y, h, mm, s, km);
+					Entry e = new RunEntry(n, d, m, y, h, mm, s, km);
 					myAthletes.addEntry(e);
 					message = "Record added successfully\n";
 				}
@@ -168,31 +167,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 
 		return message;
 	}
-
 	
-	/**
-	 * Checks the given date for validity, rejecting month and day combinations that do not exist.
-	 * 
-	 * @param d day
-	 * @param m month
-	 * @param y year
-	 * 
-	 * @return whether or not the date is valid
-	 */
-	private boolean isDateValid(int d, int m, int y) {
-		boolean isValid = true;
-		try {
-			Month month = Month.of(m);
-			Year year = Year.of(y);
-			if (d > month.length(year.isLeap())) {
-				isValid = false;
-			}
-		} catch (Exception e) {
-			isValid = false;
-		}
-		return isValid;
-	}
-
 	public String lookupEntry() {
 		int m;
 		int d;
