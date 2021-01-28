@@ -110,6 +110,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 
 	public String addEntry(String what) {
 		String message = "";
+		
 		System.out.println("Adding " + what + " entry to the records");
 		
 		boolean isInputValid = true;
@@ -117,17 +118,30 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 		// get name and validate it
 		String n = name.getText();
 		
-		if (n == "" || n == null) {
-			message += "ERROR: please enter a name";
+		if (n.equals("")) {
+			message += "ERROR: please enter a name\n";
 			isInputValid = false;
 		}
 		
 		try {
-			// get & validate date values
+			// get date values
 			int m = Integer.parseInt(month.getText());
 			int d = Integer.parseInt(day.getText());
 			int y = Integer.parseInt(year.getText());
-			isInputValid &= isDateValid(d, m, y);
+			
+			// get time values
+			int h = Integer.parseInt(hours.getText());
+			int mm = Integer.parseInt(mins.getText());
+			int s = Integer.parseInt(secs.getText());
+			
+			GregorianCalendar time = new GregorianCalendar(y, m - 1, d, h, mm, s);
+			time.setLenient(false);
+			time.get(Calendar.YEAR);
+			time.get(Calendar.MONTH);
+			time.get(Calendar.DAY_OF_MONTH);
+			time.get(Calendar.HOUR_OF_DAY);
+			time.get(Calendar.MINUTE);
+			time.get(Calendar.SECOND);
 			
 			// get & validate distance value
 			float km = java.lang.Float.parseFloat(dist.getText());
@@ -136,39 +150,14 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 				isInputValid = false;
 			}
 			
-			// get & validate time values
-			int h = Integer.parseInt(hours.getText());
-			int mm = Integer.parseInt(mins.getText());
-			if (mm < 0) {
-				message += "ERROR: value for minutes must be a positive number.\n";
-				isInputValid = false;
-			}
-			int s = Integer.parseInt(secs.getText());
-			if (s < 0) {
-				message += "ERROR: value for seconds must be a positive number.\n";
-				isInputValid = false;
-			}
-			
-			// if time entered has >59 seconds or minutes, convert time to sensible representation
-			if (s > 59) {
-				mm += s / 60;
-				s += s % 60;
-				message += "Second value larger than 59 entered. Converted seconds to minutes and seconds.";
-			}
-			if (mm > 59) {
-				h += mm / 60;
-				mm += mm % 60;
-				message += "Minute value larger than 59 entered. Converted minutes to hours and minutes.";
-			}
-			
 			// only add the entry if it is valid
 			if (isInputValid) {
 				Entry e = new Entry(n, d, m, y, h, mm, s, km);
 				myAthletes.addEntry(e);
 				message = "Record added successfully\n";
 			}
-		} catch (NumberFormatException e) {
-			message += "ERROR: Please make sure valid values are entered into all fields.";
+		} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
+			message += "ERROR: Please make sure valid values are entered into all fields.\n";
 		}
 
 		return message;

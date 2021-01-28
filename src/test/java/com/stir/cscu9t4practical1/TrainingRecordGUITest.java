@@ -90,9 +90,21 @@ public class TrainingRecordGUITest {
 		instance.fillDisplay(entry);
 		String message = instance.addEntry("generic");
 		System.out.println(message);
-		assertEquals(message, "Record added\n");
+		assertEquals(message, "Record added successfully\n");
 		
-		//TODO: Implement tests for invalid values
+		// test name validation
+		entry = new Entry("", 1, 2, 2003, 0, 16, 7, 3);
+		instance.fillDisplay(entry);
+		message = instance.addEntry("generic");
+		System.out.println(message);
+		assertEquals("ERROR: please enter a name\n", message);
+		
+		// test distance validation
+		entry = new Entry("Belice", 1, 2, 2003, 0, 16, 7, -3);
+		instance.fillDisplay(entry);
+		message = instance.addEntry("generic");
+		System.out.println(message);
+		assertEquals(message, "ERROR: value for distance must be a positive number.\n");
 	}
 
 	/**
