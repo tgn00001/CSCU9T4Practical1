@@ -41,6 +41,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 	private JButton addR = new JButton("Add");
 	private JButton lookUpByDate = new JButton("Look Up");
 	private JButton findAllByDate = new JButton("Find All By Date");
+	private JButton findAllByName = new JButton("Find All By Name");
 
 	private TrainingRecord myAthletes = new TrainingRecord();
 
@@ -107,6 +108,8 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 		lookUpByDate.addActionListener(this);
 		add(findAllByDate);
 		findAllByDate.addActionListener(this);
+		add(findAllByName);
+		findAllByName.addActionListener(this);
 		add(outputArea);
 		outputArea.setEditable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -166,6 +169,9 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 		}
 		if (event.getSource() == findAllByDate) {
 			message = findAllByDate();
+		}
+		if (event.getSource() == findAllByName) {
+			message = myAthletes.findAllEntriesForName(name.getText());
 		}
 		outputArea.setText(message);
 

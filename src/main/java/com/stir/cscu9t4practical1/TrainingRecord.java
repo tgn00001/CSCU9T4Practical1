@@ -2,6 +2,8 @@
 package com.stir.cscu9t4practical1;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TrainingRecord {
 	private List<Entry> tr;
@@ -81,7 +83,27 @@ public class TrainingRecord {
 		}
 		return found;
 	}
-
+	
+	/**
+	 * Find and return all entries with a name containing the search string.
+	 * 
+	 * @param searchString the name of the athlete, or part of it
+	 * @return the entries under this name
+	 */
+	public String findAllEntriesForName(String searchString) {
+		ListIterator<Entry> iter = tr.listIterator();
+		String  result = "";
+		Pattern p = Pattern.compile(".*" + searchString.toLowerCase() + ".*");
+		while (iter.hasNext()) {
+			Entry current = iter.next();
+			Matcher m = p.matcher(current.getName().toLowerCase());
+			if (m.find())
+				result += current.getEntry();
+		}
+		if (result.equals(""))	return "No entries found for \"" + searchString + "\"";
+		else					return result;
+	}
+ 
 	/**
 	 * Counts the number of entries in the record.
 	 * 
