@@ -24,6 +24,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 	private JTextField where = new JTextField(10);
 	private JTextField terrain = new JTextField(15);
 	private JTextField tempo = new JTextField(10);
+	private JLabel labtype = new JLabel("Entry type:");
 	private JLabel labn = new JLabel(" Name:");
 	private JLabel labd = new JLabel(" Day:");
 	private JLabel labm = new JLabel(" Month:");
@@ -45,6 +46,10 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 
 	private JTextArea outputArea = new JTextArea(5, 50);
 
+	private String[] entryTypes = { "Run", "Sprint", "Cycle", "Swim" };
+	private JComboBox<String> selection = new JComboBox<String>(entryTypes);
+	private String selectedEntryType = "run";
+
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		TrainingRecordGUI applic = new TrainingRecordGUI();
@@ -54,6 +59,9 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 	public TrainingRecordGUI() {
 		super("Training Record");
 		setLayout(new FlowLayout());
+		add(labtype);
+		add(selection);
+		selection.addActionListener(this);
 		add(labn);
 		add(name);
 		name.setEditable(true);
@@ -77,22 +85,22 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 		secs.setEditable(true);
 		add(labreps);
 		add(reps);
-		reps.setEditable(true);
+		reps.setEditable(false);
 		add(labdist);
 		add(dist);
 		dist.setEditable(true);
 		add(labrec);
-		add(rec);		
-		rec.setEditable(true);
+		add(rec);
+		rec.setEditable(false);
 		add(labwhere);
-		add(where);		
-		where.setEditable(true);
+		add(where);
+		where.setEditable(false);
 		add(labterrain);
-		add(terrain);		
-		terrain.setEditable(true);
+		add(terrain);
+		terrain.setEditable(false);
 		add(labtempo);
-		add(tempo);	
-		tempo.setEditable(true);
+		add(tempo);
+		tempo.setEditable(false);
 		add(addR);
 		addR.addActionListener(this);
 		add(lookUpByDate);
@@ -102,7 +110,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 		add(outputArea);
 		outputArea.setEditable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setSize(720, 200);
+		setSize(500, 200);
 		setVisible(true);
 		blankDisplay();
 
@@ -114,8 +122,44 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 	// listen for and respond to GUI events
 	public void actionPerformed(ActionEvent event) {
 		String message = "";
+		if (event.getSource() == selection) {
+			JComboBox<String> selec = (JComboBox<String>) event.getSource();
+			if (selec.getSelectedItem().equals("Run")) {
+				reps.setEditable(false);
+				labdist.setText("  Distance (km):");
+				rec.setEditable(false);
+				where.setEditable(false);
+				terrain.setEditable(false);
+				tempo.setEditable(false);
+				selectedEntryType = "run";
+			} else if (selec.getSelectedItem().equals("Sprint")) {
+				reps.setEditable(true);
+				labdist.setText("x Distance (m):");
+				rec.setEditable(true);
+				where.setEditable(false);
+				terrain.setEditable(false);
+				tempo.setEditable(false);
+				selectedEntryType = "sprint";
+			} else if (selec.getSelectedItem().equals("Cycle")) {
+				reps.setEditable(false);
+				labdist.setText("  Distance (km):");
+				rec.setEditable(false);
+				where.setEditable(false);
+				terrain.setEditable(true);
+				tempo.setEditable(true);
+				selectedEntryType = "cycle";
+			} else {
+				reps.setEditable(false);
+				labdist.setText("  Distance (km):");
+				rec.setEditable(false);
+				where.setEditable(true);
+				terrain.setEditable(false);
+				tempo.setEditable(false);
+				selectedEntryType = "swim";
+			}
+		}
 		if (event.getSource() == addR) {
-				message = addEntry("generic");
+			message = addEntry(selectedEntryType);
 		}
 		if (event.getSource() == lookUpByDate) {
 			message = lookupEntry();
@@ -124,66 +168,126 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 			message = findAllByDate();
 		}
 		outputArea.setText(message);
-		
-		// only blank the display if there are no errors the user may wish to fix and try again
+
+		// only blank the display if there are no errors the user may wish to fix and
+		// try again
 		if (!Pattern.matches(".*[ERROR].*", message)) {
 			blankDisplay();
 		}
-		
+
 	} // actionPerformed
 
 	public String addEntry(String what) {
 		String message = "";
-		
+
 		System.out.println("Adding " + what + " entry to the records");
-		
+
 		boolean isInputValid = true;
-		
+
 		// get name and validate it
 		String n = name.getText();
-		
+
 		if (n.equals("")) {
 			message += "ERROR: please enter a name\n";
 			isInputValid = false;
 		}
-		
+
 		try {
 			// get date values
 			int m = Integer.parseInt(month.getText());
 			int d = Integer.parseInt(day.getText());
 			int y = Integer.parseInt(year.getText());
-			
+
 			// get time values
 			int h = Integer.parseInt(hours.getText());
 			int mm = Integer.parseInt(mins.getText());
 			int s = Integer.parseInt(secs.getText());
-			
+
 			GregorianCalendar time = new GregorianCalendar();
 			time.setLenient(false);
 			time.set(Calendar.YEAR, y);
-			time.set(Calendar.MONTH, m-1);
+			time.set(Calendar.MONTH, m - 1);
 			time.set(Calendar.DAY_OF_MONTH, d);
 			time.set(Calendar.HOUR_OF_DAY, h);
 			time.set(Calendar.MINUTE, mm);
 			time.set(Calendar.SECOND, s);
-			
+
 			// get & validate distance value
 			float km = java.lang.Float.parseFloat(dist.getText());
 			if (km < 0) {
 				message += "ERROR: value for distance must be a positive number.\n";
 				isInputValid = false;
 			}
-			
+
+			// if sprint entry, get and validate repetition and recovery values
+			int repetitions = 0;
+			int recovery = 0;
+			if (what.equals("sprint")) {
+				repetitions = java.lang.Integer.parseInt(reps.getText());
+				recovery = java.lang.Integer.parseInt(rec.getText());
+				if (repetitions < 0) {
+					message += "ERROR: value for repetitions must be a positive number.\n";
+					isInputValid = false;
+				}
+				if (recovery < 0) {
+					message += "ERROR: value for recovery must be a positive number.\n";
+					isInputValid = false;
+				}
+			}
+
+			// if cycle entry, get and validate terrain and tempo values
+			String cycleTerrain = "";
+			String cycleTempo = "";
+			if (what.equals("swim")) {
+				cycleTerrain = terrain.getText();
+				cycleTempo = tempo.getText();
+				if (cycleTerrain.equals("")) {
+					message += "ERROR: please enter a terrain\n";
+					isInputValid = false;
+				}
+				if (cycleTempo.equals("")) {
+					message += "ERROR: please enter a tempo\n";
+					isInputValid = false;
+				}
+			}
+
+			// if swim entry, get and validate location value
+			String swimLocation = "";
+			if (what.equals("swim")) {
+				swimLocation = where.getText();
+				if (swimLocation.equals("")) {
+					message += "ERROR: please enter a swimming location\n";
+					isInputValid = false;
+				}
+			}
+
 			// only add the entry if it is valid
 			if (isInputValid) {
-				// only add entry if no run exists in the training record for this athlete on this day
-				if (myAthletes.lookupEntry(d, m, y).equals("No entries found") || !myAthletes.doesEntryExist(n, d, m, y)) {
-					Entry e = new RunEntry(n, d, m, y, h, mm, s, km);
+				// only add entry if no run exists in the training record for this athlete on
+				// this day
+				if (myAthletes.lookupEntry(d, m, y).equals("No entries found")
+						|| !myAthletes.doesEntryExist(n, d, m, y)) {
+					Entry e;
+					// switch statement, check which entry constructor to use.
+					switch (what) {
+					case "sprint":
+						e = new SprintEntry(n, d, m, y, h, mm, s, km, repetitions, recovery);
+						break;
+					case "cycle":
+						e = new CycleEntry(n, d, m, y, h, mm, s, km, cycleTerrain, cycleTempo);
+						break;
+					case "swim":
+						e = new SwimEntry(n, d, m, y, h, mm, s, km, swimLocation);
+						break;
+					default:
+						e = new RunEntry(n, d, m, y, h, mm, s, km);
+						break;
+					}
+
 					myAthletes.addEntry(e);
 					message = "Record added successfully\n";
-				}
-				else {
-					message = "ERROR: cannot add run twice.\n";
+				} else {
+					message = "ERROR: cannot add entry twice.\n";
 				}
 			}
 		} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
@@ -192,7 +296,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 
 		return message;
 	}
-	
+
 	public String lookupEntry() {
 		int m;
 		int d;
@@ -238,7 +342,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 		tempo.setText("");
 
 	}// blankDisplay
-	
+
 	// Fills the input fields on the display for testing purposes only
 	public void fillDisplay(Entry ent) {
 		name.setText(ent.getName());
