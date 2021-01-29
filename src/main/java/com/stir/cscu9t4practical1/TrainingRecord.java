@@ -120,4 +120,21 @@ public class TrainingRecord {
 		tr.clear();
 	}
 
+	public String removeEntry(String n, int d, int m, int y) {
+			ListIterator<Entry> iter = tr.listIterator();
+			boolean removed = false;
+			String toBeRemoved = n + " on " + d + "/" + m + "/" + y;
+			while (iter.hasNext()) {
+				Entry current = iter.next();
+				if (current.getName().equals(n) && current.getDay() == d && current.getMonth() == m && current.getYear() == y) {
+					removed = tr.remove(current);
+				}
+			}
+			if (!removed) {
+				return "No entry found for " + toBeRemoved;
+			}
+			else return "Removed entry for " + toBeRemoved;
+			
+	}
+
 } // TrainingRecord

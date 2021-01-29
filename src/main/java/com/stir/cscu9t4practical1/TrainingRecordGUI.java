@@ -42,6 +42,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 	private JButton lookUpByDate = new JButton("Look Up");
 	private JButton findAllByDate = new JButton("Find All By Date");
 	private JButton findAllByName = new JButton("Find All By Name");
+	private JButton remove = new JButton("Remove");
 
 	private TrainingRecord myAthletes = new TrainingRecord();
 
@@ -110,6 +111,8 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 		findAllByDate.addActionListener(this);
 		add(findAllByName);
 		findAllByName.addActionListener(this);
+		add(remove);
+		remove.addActionListener(this);
 		add(outputArea);
 		outputArea.setEditable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -126,40 +129,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent event) {
 		String message = "";
 		if (event.getSource() == selection) {
-			JComboBox<String> selec = (JComboBox<String>) event.getSource();
-			if (selec.getSelectedItem().equals("Run")) {
-				reps.setEditable(false);
-				labdist.setText("  Distance (km):");
-				rec.setEditable(false);
-				where.setEditable(false);
-				terrain.setEditable(false);
-				tempo.setEditable(false);
-				selectedEntryType = "run";
-			} else if (selec.getSelectedItem().equals("Sprint")) {
-				reps.setEditable(true);
-				labdist.setText("x Distance (m):");
-				rec.setEditable(true);
-				where.setEditable(false);
-				terrain.setEditable(false);
-				tempo.setEditable(false);
-				selectedEntryType = "sprint";
-			} else if (selec.getSelectedItem().equals("Cycle")) {
-				reps.setEditable(false);
-				labdist.setText("  Distance (km):");
-				rec.setEditable(false);
-				where.setEditable(false);
-				terrain.setEditable(true);
-				tempo.setEditable(true);
-				selectedEntryType = "cycle";
-			} else {
-				reps.setEditable(false);
-				labdist.setText("  Distance (km):");
-				rec.setEditable(false);
-				where.setEditable(true);
-				terrain.setEditable(false);
-				tempo.setEditable(false);
-				selectedEntryType = "swim";
-			}
+			switchSelection(event);
 		}
 		if (event.getSource() == addR) {
 			message = addEntry(selectedEntryType);
@@ -171,7 +141,10 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 			message = findAllByDate();
 		}
 		if (event.getSource() == findAllByName) {
-			message = myAthletes.findAllEntriesForName(name.getText());
+			message = findEntriesByName();
+		}
+		if (event.getSource() == remove) {
+			message = removeEntry();
 		}
 		outputArea.setText(message);
 
@@ -182,6 +155,43 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 		}
 
 	} // actionPerformed
+
+	private void switchSelection(ActionEvent event) {
+		JComboBox<String> selec = (JComboBox<String>) event.getSource();
+		if (selec.getSelectedItem().equals("Run")) {
+			reps.setEditable(false);
+			labdist.setText("  Distance (km):");
+			rec.setEditable(false);
+			where.setEditable(false);
+			terrain.setEditable(false);
+			tempo.setEditable(false);
+			selectedEntryType = "run";
+		} else if (selec.getSelectedItem().equals("Sprint")) {
+			reps.setEditable(true);
+			labdist.setText("x Distance (m):");
+			rec.setEditable(true);
+			where.setEditable(false);
+			terrain.setEditable(false);
+			tempo.setEditable(false);
+			selectedEntryType = "sprint";
+		} else if (selec.getSelectedItem().equals("Cycle")) {
+			reps.setEditable(false);
+			labdist.setText("  Distance (km):");
+			rec.setEditable(false);
+			where.setEditable(false);
+			terrain.setEditable(true);
+			tempo.setEditable(true);
+			selectedEntryType = "cycle";
+		} else {
+			reps.setEditable(false);
+			labdist.setText("  Distance (km):");
+			rec.setEditable(false);
+			where.setEditable(true);
+			terrain.setEditable(false);
+			tempo.setEditable(false);
+			selectedEntryType = "swim";
+		}
+	}
 
 	public String addEntry(String what) {
 		String message = "";
@@ -332,6 +342,30 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 		}
 	}
 
+	private String findEntriesByName() {
+		return myAthletes.findAllEntriesForName(name.getText());
+	}
+	
+	private String removeEntry() {
+		String n = name.getText();
+		if (n.equals("")) {
+			return "ERROR: Please enter a name.";
+		}
+		int m;
+		int d;
+		int y;
+		try {
+			m = Integer.parseInt(month.getText());
+			d = Integer.parseInt(day.getText());
+			y = Integer.parseInt(year.getText());
+			outputArea.setText("looking up record ...");
+			String message = myAthletes.removeEntry(n, d, m, y);
+			return message;
+		} catch (NumberFormatException e) {
+			return "ERROR: No valid date entered.";
+		}
+	}
+	
 	public void blankDisplay() {
 		name.setText("");
 		day.setText("");
