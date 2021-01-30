@@ -21,8 +21,19 @@ public class TrainingRecordTest {
     public TrainingRecordTest() {
     }
     
+    private TrainingRecord instance;
+    private static Entry a, a2, a_sprint, a_cycle, a_swim, b, c1, c2;
+    
     @BeforeAll
     public static void setUpClass() {
+    	a = new RunEntry("Alice", 1, 2, 2003, 0, 16, 7, 3);
+    	a2 = new RunEntry("Alice", 1, 2, 2003, 0, 16, 7, 3);
+        a_sprint = new SprintEntry("Alice", 2, 2, 2003, 0, 15, 8, 300, 4, 2);
+        a_cycle = new CycleEntry("Alice", 3, 2, 2003, 0, 14, 9, 15, "mountain", "moderate");
+        a_swim = new SwimEntry("Alice", 4, 2, 2003, 0, 13, 6, 7, "pool");
+        b = new RunEntry("Bob", 1, 2, 2003, 0, 14, 15, 3);
+        c1 = new RunEntry("Claire", 7, 3, 2010, 0, 26, 20, 7);
+        c2 = new RunEntry("Claire", 11, 3, 2010, 0, 24, 55, 7);
     }
     
     @AfterAll
@@ -31,6 +42,7 @@ public class TrainingRecordTest {
     
     @BeforeEach
     public void setUp() {
+    	instance = new TrainingRecord();
     }
     
     @AfterEach
@@ -45,15 +57,19 @@ public class TrainingRecordTest {
     @Test
     public void testAddEntry() {
         System.out.println("addEntry");
-        Entry a = new RunEntry("Alice", 1, 2, 2003, 0, 16, 7, 3);
-        TrainingRecord instance = new TrainingRecord();
         try {
+			assertEquals(instance.getNumberOfEntries(),0);
 			instance.addEntry(a);
 			assertEquals(instance.getNumberOfEntries(),1);
+			instance.addEntry(a_sprint);
+			assertEquals(instance.getNumberOfEntries(),2);
+			instance.addEntry(a_cycle);
+			assertEquals(instance.getNumberOfEntries(),3);
+			instance.addEntry(a_swim);
+			assertEquals(instance.getNumberOfEntries(),4);
 		} catch (DuplicateElementException e) {
 			System.out.println("TrainingRecord.addEntry() is broken!!!");
 		}
-
     }
     
     /**
@@ -63,12 +79,9 @@ public class TrainingRecordTest {
     @Test
     public void testAddEntryUnique() {
         System.out.println("addEntry -- fail");
-        Entry a = new RunEntry("Alice", 1, 2, 2003, 0, 16, 7, 3);
-        Entry b = new RunEntry("Alice", 1, 2, 2003, 0, 16, 7, 3);
-        TrainingRecord instance = new TrainingRecord();
         try {
 			instance.addEntry(a);
-			assertThrows(DuplicateElementException.class, () -> instance.addEntry(b));
+			assertThrows(DuplicateElementException.class, () -> instance.addEntry(a2));
 			assertEquals(instance.getNumberOfEntries(),1);
 		} catch (DuplicateElementException e) {
 			System.out.println("TrainingRecord.addEntry() is broken!!!");
@@ -81,12 +94,7 @@ public class TrainingRecordTest {
     @Test
     public void testLookupEntry() {
         System.out.println("lookupEntry");
-        TrainingRecord instance = new TrainingRecord();
         String expResult = "No entries found";
-        Entry a = new RunEntry("Alice", 1, 2, 2003, 0, 16, 7, 3);
-        Entry b = new RunEntry("Bob", 1, 2, 2003, 0, 14, 15, 3);
-        Entry c1 = new RunEntry("Claire", 7, 3, 2010, 0, 26, 20, 7);
-        Entry c2 = new RunEntry("Claire", 11, 3, 2010, 0, 24, 55, 7);
         try {
 			instance.addEntry(a);
 			instance.addEntry(b);
@@ -105,31 +113,8 @@ public class TrainingRecordTest {
 
     }
     
-    /**
-     * Test of getNumberOfEntries, of class TrainingRecord
-     */
-    @Test
-    public void testGetNumberOfEntries() {
-        System.out.println("GetNumberOfEntries");
-        TrainingRecord instance = new TrainingRecord();
-        Entry a = new RunEntry("Alice", 1, 2, 2003, 0, 16, 7, 3);
-        Entry b = new RunEntry("Bob", 1, 2, 2003, 0, 14, 15, 3);
-        Entry c1 = new RunEntry("Claire", 7, 3, 2010, 0, 26, 20, 7);
-        Entry c2 = new RunEntry("Claire", 11, 3, 2010, 0, 24, 55, 7);
-        assertEquals(instance.getNumberOfEntries(),0);
-        try {
-			instance.addEntry(a);
-			assertEquals(instance.getNumberOfEntries(),1);
-			instance.addEntry(b);
-			assertEquals(instance.getNumberOfEntries(),2);
-			instance.addEntry(c1);
-			assertEquals(instance.getNumberOfEntries(),3);
-			instance.addEntry(c2);
-			assertEquals(instance.getNumberOfEntries(),4);
-		} catch (DuplicateElementException e) {
-			System.out.println("TrainingRecord.addEntry() is broken!!!");
-		}
-    }
+
+    
     
     /**
      * Test of lookupEntries, of class TrainingRecord
@@ -140,9 +125,6 @@ public class TrainingRecordTest {
         String expectResultsNone = "Sorry couldn't find anything for this date";
         String expectResults = "Alice ran 3.0 km in 0:16:7 on 1/2/2003\n" + 
                                 "Bob ran 3.0 km in 0:14:15 on 1/2/2003\n";
-        TrainingRecord instance = new TrainingRecord();
-        Entry a = new RunEntry("Alice", 1, 2, 2003, 0, 16, 7, 3);
-        Entry b = new RunEntry("Bob", 1, 2, 2003, 0, 14, 15, 3);
         try {
 			instance.addEntry(a);
 			instance.addEntry(b);
@@ -159,4 +141,114 @@ public class TrainingRecordTest {
 		}
     }
     
+    
+    /**
+     * Test of doesEntryExist, of class TrainingRecord
+     */
+    @Test
+    public void testDoesEntryExist() {
+    	System.out.println("doesEntryExist");
+    	try {
+    		assertFalse(instance.doesEntryExist(a.getName(), a.getDay(), a.getMonth(), a.getYear()));
+    		instance.addEntry(a);
+    		assertTrue(instance.doesEntryExist(a.getName(), a.getDay(), a.getMonth(), a.getYear()));
+    	} catch (DuplicateElementException e) {
+    		System.out.println("TrainingRecord.addEntry() is broken!!!");
+    	}
+    }
+    
+    /**
+     * Test of findAllEntriesForName, of class TrainingRecord
+     */
+    @Test
+    public void testFindAllEntriesForName() {
+        System.out.println("findAllEntriesForName");
+    	try {
+			assertEquals(instance.getNumberOfEntries(),0);
+			String expResultAliceNoEntries = "No entries found for \"Alice\"";
+			String expResultClaireNoEntries = "No entries found for \"Claire\"";
+			String expResultBothNoEntries = "No entries found for \"c\"";
+			assertEquals(expResultAliceNoEntries, instance.findAllEntriesForName("Alice"));
+			assertEquals(expResultClaireNoEntries, instance.findAllEntriesForName("Claire"));
+			assertEquals(expResultBothNoEntries, instance.findAllEntriesForName("c"));
+			instance.addEntry(a);
+			instance.addEntry(a_sprint);
+			instance.addEntry(a_cycle);
+			instance.addEntry(a_swim);
+			instance.addEntry(c1);
+			instance.addEntry(c2);
+			String expResultAlice = a.getEntry() + a_sprint.getEntry() + a_cycle.getEntry() + a_swim.getEntry();
+			String expResultClaire = c1.getEntry() + c2.getEntry();
+			String expResultBoth = expResultAlice + expResultClaire;
+			assertEquals(expResultAlice, instance.findAllEntriesForName("Alice"));
+			assertEquals(expResultClaire, instance.findAllEntriesForName("Claire"));
+			assertEquals(expResultBoth, instance.findAllEntriesForName("c"));
+		
+		} catch (DuplicateElementException e) {
+			System.out.println("TrainingRecord.addEntry() is broken!!!");
+		}
+    }
+    
+    /**
+     * Test of getNumberOfEntries, of class TrainingRecord
+     */
+    @Test
+    public void testGetNumberOfEntries() {
+        System.out.println("getNumberOfEntries");
+        assertEquals(instance.getNumberOfEntries(),0);
+        try {
+			instance.addEntry(a);
+			assertEquals(instance.getNumberOfEntries(),1);
+			instance.addEntry(b);
+			assertEquals(instance.getNumberOfEntries(),2);
+			instance.addEntry(c1);
+			assertEquals(instance.getNumberOfEntries(),3);
+			instance.addEntry(c2);
+			assertEquals(instance.getNumberOfEntries(),4);
+		} catch (DuplicateElementException e) {
+			System.out.println("TrainingRecord.addEntry() is broken!!!");
+		}
+    }
+    
+    
+    /**
+     * Test of clearAllEntries, of class TrainingRecord
+     */
+    @Test
+    public void testClearAllEntries() {
+    	 System.out.println("clearAllEntries");
+         try {
+ 			instance.addEntry(a);
+ 			assertEquals(instance.getNumberOfEntries(),1);
+ 			instance.addEntry(a_sprint);
+ 			assertEquals(instance.getNumberOfEntries(),2);
+ 			instance.addEntry(a_cycle);
+ 			assertEquals(instance.getNumberOfEntries(),3);
+ 			instance.addEntry(a_swim);
+ 			assertEquals(instance.getNumberOfEntries(),4);
+ 			instance.clearAllEntries();
+ 			assertEquals(instance.getNumberOfEntries(),0);
+ 		} catch (DuplicateElementException e) {
+ 			System.out.println("TrainingRecord.addEntry() is broken!!!");
+ 		}
+    }
+    
+    /**
+     * Test of removeEntry, of class TrainingRecord
+     */
+    @Test
+    public void testRemoveEntry() {
+    	System.out.println("removeEntry");
+        try {
+			assertEquals(instance.getNumberOfEntries(),0);
+			instance.addEntry(a);
+			assertEquals(instance.getNumberOfEntries(),1);
+			assertEquals("Removed entry for Alice on 1/2/2003", instance.removeEntry(a.getName(), a.getDay(), a.getMonth(), a.getYear()));
+			assertEquals(instance.getNumberOfEntries(),0);
+			assertEquals("No entry found for Alice on 1/2/2003", instance.removeEntry(a.getName(), a.getDay(), a.getMonth(), a.getYear()));
+			assertEquals(instance.getNumberOfEntries(),0);
+		} catch (DuplicateElementException e) {
+			System.out.println("TrainingRecord.addEntry() is broken!!!");
+		}
+    }
 }

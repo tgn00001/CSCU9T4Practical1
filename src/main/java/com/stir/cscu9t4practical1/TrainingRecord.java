@@ -122,6 +122,14 @@ public class TrainingRecord {
 		tr.clear();
 	}
 
+	/**
+	 * Removes the entry for the given name on the given date.
+	 * @param n name of the athlete
+	 * @param d day
+	 * @param m month
+	 * @param y year
+	 * @return Diagnostic message.
+	 */
 	public String removeEntry(String n, int d, int m, int y) {
 			ListIterator<Entry> iter = tr.listIterator();
 			boolean removed = false;
@@ -129,7 +137,8 @@ public class TrainingRecord {
 			while (iter.hasNext()) {
 				Entry current = iter.next();
 				if (current.getName().equals(n) && current.getDay() == d && current.getMonth() == m && current.getYear() == y) {
-					removed = tr.remove(current);
+					iter.remove();
+					removed = true;
 				}
 			}
 			if (!removed) {
