@@ -106,12 +106,16 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 		add(addR);
 		addR.addActionListener(this);
 		add(lookUpByDate);
+		lookUpByDate.setEnabled(false);
 		lookUpByDate.addActionListener(this);
 		add(findAllByDate);
+		findAllByDate.setEnabled(false);
 		findAllByDate.addActionListener(this);
 		add(findAllByName);
+		findAllByName.setEnabled(false);
 		findAllByName.addActionListener(this);
 		add(remove);
+		remove.setEnabled(false);
 		remove.addActionListener(this);
 		add(outputArea);
 		outputArea.setEditable(false);
@@ -150,7 +154,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 
 		// only blank the display if there are no errors the user may wish to fix and
 		// try again
-		if (!Pattern.matches(".*[ERROR].*", message)) {
+		if (!Pattern.matches(".*ERROR.*", message)) {
 			blankDisplay();
 		}
 
@@ -206,9 +210,6 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 	 */
 	public String addEntry(String what) {
 		String message = "";
-
-		System.out.println("Adding " + what + " entry to the records");
-
 		boolean isInputValid = true;
 
 		// get name and validate it
@@ -265,7 +266,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 			// if cycle entry, get and validate terrain and tempo values
 			String cycleTerrain = "";
 			String cycleTempo = "";
-			if (what.equals("swim")) {
+			if (what.equals("cycle")) {
 				cycleTerrain = terrain.getText();
 				cycleTempo = tempo.getText();
 				if (cycleTerrain.equals("")) {
@@ -309,6 +310,10 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 
 				myAthletes.addEntry(e);
 				message = "Record added successfully\n";
+				lookUpByDate.setEnabled(true);
+				findAllByDate.setEnabled(true);
+				findAllByName.setEnabled(true);
+				remove.setEnabled(true);
 			}
 		} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
 			message += "ERROR: Please make sure valid values are entered into all fields.\n";
@@ -382,6 +387,12 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 			y = Integer.parseInt(year.getText());
 			outputArea.setText("looking up record ...");
 			String message = myAthletes.removeEntry(n, d, m, y);
+			if (Pattern.matches("Removed.*", message) && myAthletes.getNumberOfEntries() == 0) {
+				lookUpByDate.setEnabled(false);
+				findAllByDate.setEnabled(false);
+				findAllByName.setEnabled(false);
+				remove.setEnabled(false);
+			}
 			return message;
 		} catch (NumberFormatException e) {
 			return "ERROR: No valid date entered.";

@@ -94,6 +94,8 @@ public class TrainingRecord {
 	 */
 	public String findAllEntriesForName(String searchString) {
 		ListIterator<Entry> iter = tr.listIterator();
+		if (searchString.contentEquals(""))
+			return "ERROR: Please enter a name to search for.";
 		String  result = "";
 		Pattern p = Pattern.compile(".*" + searchString.toLowerCase() + ".*");
 		while (iter.hasNext()) {

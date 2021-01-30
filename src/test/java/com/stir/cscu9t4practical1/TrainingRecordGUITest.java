@@ -114,7 +114,7 @@ public class TrainingRecordGUITest {
 		System.out.println("Check if you have added the buttons");
 		TrainingRecordGUI instance = new TrainingRecordGUI();
 		Class<?> instanceClass = instance.getClass();
-		String[] expectedFields = {"addR",  "findAllByDate", "lookUpByDate", "findAllByName", "remove" }; // add RemoveEntry when it is ready
+		String[] expectedFields = {"addR", "lookUpByDate", "findAllByDate", "findAllByName", "remove" }; // add RemoveEntry when it is ready
 		Field fields[] = instanceClass.getDeclaredFields();
 		int found = 0;
 		for (Field field : fields) {
