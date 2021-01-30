@@ -16,9 +16,11 @@ public class TrainingRecord {
 	 * Adds an entry to the record.
 	 * 
 	 * @param e the entry to add
+	 * @throws DuplicateElementException if there is an entry with this name on this date already.
 	 */
-	public void addEntry(Entry e) {
-		tr.add(e);
+	public void addEntry(Entry e) throws DuplicateElementException{
+		if (doesEntryExist(e.getName(), e.getDay(), e.getMonth(), e.getYear()))	throw new DuplicateElementException();
+		else 				tr.add(e);
 	} // addClass
 
 	/**

@@ -47,8 +47,13 @@ public class TrainingRecordTest {
         System.out.println("addEntry");
         Entry a = new RunEntry("Alice", 1, 2, 2003, 0, 16, 7, 3);
         TrainingRecord instance = new TrainingRecord();
-        instance.addEntry(a);
-		assertEquals(instance.getNumberOfEntries(),1);
+        try {
+			instance.addEntry(a);
+			assertEquals(instance.getNumberOfEntries(),1);
+		} catch (DuplicateElementException e) {
+			System.out.println("TrainingRecord.addEntry() is broken!!!");
+		}
+
     }
     
     /**
@@ -61,12 +66,13 @@ public class TrainingRecordTest {
         Entry a = new RunEntry("Alice", 1, 2, 2003, 0, 16, 7, 3);
         Entry b = new RunEntry("Alice", 1, 2, 2003, 0, 16, 7, 3);
         TrainingRecord instance = new TrainingRecord();
-        instance.addEntry(a);
-        instance.addEntry(b);
-        assertEquals(instance.getNumberOfEntries(),1);
-        // You might also consider using assertThrows() and let
-        // TrainingRecord instance take care of when you're trying to add
-        // a none-unique entry
+        try {
+			instance.addEntry(a);
+			assertThrows(DuplicateElementException.class, () -> instance.addEntry(b));
+			assertEquals(instance.getNumberOfEntries(),1);
+		} catch (DuplicateElementException e) {
+			System.out.println("TrainingRecord.addEntry() is broken!!!");
+		}
     }
 
     /**
@@ -81,17 +87,22 @@ public class TrainingRecordTest {
         Entry b = new RunEntry("Bob", 1, 2, 2003, 0, 14, 15, 3);
         Entry c1 = new RunEntry("Claire", 7, 3, 2010, 0, 26, 20, 7);
         Entry c2 = new RunEntry("Claire", 11, 3, 2010, 0, 24, 55, 7);
-        instance.addEntry(a);
-        instance.addEntry(b);
-        instance.addEntry(c1);
-        instance.addEntry(c2);
-        int d = 7;
-        int m = 3;
-        int y = 2010;
-        String result = instance.lookupEntry(d, m, y);
-        assertNotEquals(expResult, result, "expecting to find the entry");
-        result = instance.lookupEntry(1, 2, 1999);
-        assertEquals(expResult, result, "expecting to not find the entry");
+        try {
+			instance.addEntry(a);
+			instance.addEntry(b);
+			instance.addEntry(c1);
+			instance.addEntry(c2);
+	        int d = 7;
+	        int m = 3;
+	        int y = 2010;
+	        String result = instance.lookupEntry(d, m, y);
+	        assertNotEquals(expResult, result, "expecting to find the entry");
+	        result = instance.lookupEntry(1, 2, 1999);
+	        assertEquals(expResult, result, "expecting to not find the entry");
+		} catch (DuplicateElementException e) {
+			System.out.println("TrainingRecord.addEntry() is broken!!!");
+		}
+
     }
     
     /**
@@ -106,14 +117,18 @@ public class TrainingRecordTest {
         Entry c1 = new RunEntry("Claire", 7, 3, 2010, 0, 26, 20, 7);
         Entry c2 = new RunEntry("Claire", 11, 3, 2010, 0, 24, 55, 7);
         assertEquals(instance.getNumberOfEntries(),0);
-        instance.addEntry(a);
-        assertEquals(instance.getNumberOfEntries(),1);
-        instance.addEntry(b);
-        assertEquals(instance.getNumberOfEntries(),2);
-        instance.addEntry(c1);
-        assertEquals(instance.getNumberOfEntries(),3);
-        instance.addEntry(c2);
-        assertEquals(instance.getNumberOfEntries(),4);
+        try {
+			instance.addEntry(a);
+			assertEquals(instance.getNumberOfEntries(),1);
+			instance.addEntry(b);
+			assertEquals(instance.getNumberOfEntries(),2);
+			instance.addEntry(c1);
+			assertEquals(instance.getNumberOfEntries(),3);
+			instance.addEntry(c2);
+			assertEquals(instance.getNumberOfEntries(),4);
+		} catch (DuplicateElementException e) {
+			System.out.println("TrainingRecord.addEntry() is broken!!!");
+		}
     }
     
     /**
@@ -128,16 +143,20 @@ public class TrainingRecordTest {
         TrainingRecord instance = new TrainingRecord();
         Entry a = new RunEntry("Alice", 1, 2, 2003, 0, 16, 7, 3);
         Entry b = new RunEntry("Bob", 1, 2, 2003, 0, 14, 15, 3);
-        instance.addEntry(a);
-        instance.addEntry(b);
-        int d = 1;
-        int m = 2;
-        int y = 2003;
+        try {
+			instance.addEntry(a);
+			instance.addEntry(b);
+			int d = 1;
+			int m = 2;
+			int y = 2003;
 
-        String resultSuccess = instance.lookupEntries(d,m,y);
-        String resultNone = instance.lookupEntries(d,m,1999);
-        assertEquals(expectResultsNone,resultNone);
-        assertEquals(expectResults,resultSuccess);
+			String resultSuccess = instance.lookupEntries(d,m,y);
+			String resultNone = instance.lookupEntries(d,m,1999);
+			assertEquals(expectResultsNone,resultNone);
+			assertEquals(expectResults,resultSuccess);
+		} catch (DuplicateElementException e) {
+			System.out.println("TrainingRecord.addEntry() is broken!!!");
+		}
     }
     
 }

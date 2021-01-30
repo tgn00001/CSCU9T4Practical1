@@ -156,6 +156,11 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 
 	} // actionPerformed
 
+	/**
+	 * Switches the GUI elements on or off depending on the value selected in the "selection" combo box.
+	 * 
+	 * @param event the combo box selection event
+	 */
 	private void switchSelection(ActionEvent event) {
 		JComboBox<String> selec = (JComboBox<String>) event.getSource();
 		if (selec.getSelectedItem().equals("Run")) {
@@ -193,6 +198,12 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * Attempts to add an Entry based on the values input, validating all fields.
+	 * 
+	 * @param what the type of Entry selected
+	 * @return A diagnostic message to show whether or not the operation was successful.
+	 */
 	public String addEntry(String what) {
 		String message = "";
 
@@ -279,40 +290,39 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 
 			// only add the entry if it is valid
 			if (isInputValid) {
-				// only add entry if no run exists in the training record for this athlete on
-				// this day
-				if (myAthletes.lookupEntry(d, m, y).equals("No entries found")
-						|| !myAthletes.doesEntryExist(n, d, m, y)) {
-					Entry e;
-					// switch statement, check which entry constructor to use.
-					switch (what) {
-					case "sprint":
-						e = new SprintEntry(n, d, m, y, h, mm, s, km, repetitions, recovery);
-						break;
-					case "cycle":
-						e = new CycleEntry(n, d, m, y, h, mm, s, km, cycleTerrain, cycleTempo);
-						break;
-					case "swim":
-						e = new SwimEntry(n, d, m, y, h, mm, s, km, swimLocation);
-						break;
-					default:
-						e = new RunEntry(n, d, m, y, h, mm, s, km);
-						break;
-					}
-
-					myAthletes.addEntry(e);
-					message = "Record added successfully\n";
-				} else {
-					message = "ERROR: cannot add entry twice.\n";
+				Entry e;
+				// check which entry constructor to use, then attempt to add entry
+				switch (what) {
+				case "sprint":
+					e = new SprintEntry(n, d, m, y, h, mm, s, km, repetitions, recovery);
+					break;
+				case "cycle":
+					e = new CycleEntry(n, d, m, y, h, mm, s, km, cycleTerrain, cycleTempo);
+					break;
+				case "swim":
+					e = new SwimEntry(n, d, m, y, h, mm, s, km, swimLocation);
+					break;
+				default:
+					e = new RunEntry(n, d, m, y, h, mm, s, km);
+					break;
 				}
+
+				myAthletes.addEntry(e);
+				message = "Record added successfully\n";
 			}
 		} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
 			message += "ERROR: Please make sure valid values are entered into all fields.\n";
+		} catch (DuplicateElementException e) {
+			message = "ERROR: cannot add entry twice.\n";
 		}
 
 		return message;
 	}
 
+	/**
+	 * Looks for an Entry in the training record based on date.
+	 * @return The Entry, or an error message if no entry was found (or if there was an exception).
+	 */
 	public String lookupEntry() {
 		int m;
 		int d;
@@ -328,7 +338,11 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 			return "ERROR: No valid date entered.";
 		}
 	}
-
+	
+	/**
+	 * Looks for all Entries in the training record for the date entered.
+	 * @return The Entries, or an error message if no entries were found (or if there was an exception).
+	 */
 	private String findAllByDate() {
 		try {
 			int m = Integer.parseInt(month.getText());
@@ -342,10 +356,18 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * Looks for all Entries in the training record for the name entered.
+	 * @return The Entries, or an error message if no entries were found.
+	 */
 	private String findEntriesByName() {
 		return myAthletes.findAllEntriesForName(name.getText());
 	}
 	
+	/**
+	 * Removes the Entry for the named athlete on the given date.
+	 * @return A confirmation message, or an error message if no entry was found (or if there was an exception).
+	 */
 	private String removeEntry() {
 		String n = name.getText();
 		if (n.equals("")) {
@@ -366,6 +388,9 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 		}
 	}
 	
+	/**
+	 * Clears all text fields, resetting input.
+	 */
 	public void blankDisplay() {
 		name.setText("");
 		day.setText("");

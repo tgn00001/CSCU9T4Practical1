@@ -30,8 +30,4 @@ public class SwimEntry extends Entry {
 						+ " on " + getDay() + "/" + getMonth() + "/" + getYear() + "\n";
 		return result;
 	}
-
-	
-    Entry instance = new SwimEntry("Alice", 1, 2, 2003, 0, 16, 7, 3,"outdoors");
-    String expResult = "Alice swam 3.0 km outdoors in 0:16:7 on 1/2/2003\n";
 }
