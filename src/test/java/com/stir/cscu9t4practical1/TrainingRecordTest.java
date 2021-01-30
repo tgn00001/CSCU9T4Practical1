@@ -251,4 +251,21 @@ public class TrainingRecordTest {
 			System.out.println("TrainingRecord.addEntry() is broken!!!");
 		}
     }
+    
+    /**
+     * Test of isEmpty, of class TrainingRecord
+     */
+    @Test
+    public void testIsEmpty() {
+    	System.out.println("isEmpty");
+        try {
+			assertTrue(instance.isEmpty());
+			instance.addEntry(a);
+			assertFalse(instance.isEmpty());
+			instance.removeEntry(a.getName(), a.getDay(), a.getMonth(), a.getYear());
+			assertTrue(instance.isEmpty());
+		} catch (DuplicateElementException e) {
+			System.out.println("TrainingRecord.addEntry() is broken!!!");
+		}
+    }
 }

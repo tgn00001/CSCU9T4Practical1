@@ -7,9 +7,11 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 @SuppressWarnings("serial")
-public class TrainingRecordGUI extends JFrame implements ActionListener {
+public class TrainingRecordGUI extends JFrame implements ActionListener, DocumentListener {
 
 	private JTextField name = new JTextField(30);
 	private JTextField day = new JTextField(2);
@@ -61,72 +63,131 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 	public TrainingRecordGUI() {
 		super("Training Record");
 		setLayout(new FlowLayout());
+		
+		// entry type selection
 		add(labtype);
 		add(selection);
 		selection.addActionListener(this);
+		
+		// athlete name entry
 		add(labn);
 		add(name);
 		name.setEditable(true);
+		name.getDocument().addDocumentListener(this);
+		
+		// day entry
 		add(labd);
 		add(day);
 		day.setEditable(true);
+		day.getDocument().addDocumentListener(this);
+		
+		//month entry
 		add(labm);
 		add(month);
 		month.setEditable(true);
+		month.getDocument().addDocumentListener(this);
+		
+		// year entry
 		add(laby);
 		add(year);
 		year.setEditable(true);
+		year.getDocument().addDocumentListener(this);
+		
+		// hour entry
 		add(labh);
 		add(hours);
 		hours.setEditable(true);
+		hours.getDocument().addDocumentListener(this);
+		
+		// minute entry
 		add(labmm);
 		add(mins);
 		mins.setEditable(true);
+		mins.getDocument().addDocumentListener(this);
+		
+		// second entry
 		add(labs);
 		add(secs);
 		secs.setEditable(true);
+		secs.getDocument().addDocumentListener(this);
+		
+		// sprint repetitions entry
 		add(labreps);
 		add(reps);
 		reps.setEditable(false);
+		reps.setFocusable(false);
+		reps.getDocument().addDocumentListener(this);
+		
+		// distance entry
 		add(labdist);
 		add(dist);
 		dist.setEditable(true);
+		dist.getDocument().addDocumentListener(this);
+		
+		// sprint recovery time entry
 		add(labrec);
 		add(rec);
 		rec.setEditable(false);
+		rec.setFocusable(false);
+		rec.getDocument().addDocumentListener(this);
+		
+		// swimming location entry
 		add(labwhere);
 		add(where);
 		where.setEditable(false);
+		where.setFocusable(false);
+		where.getDocument().addDocumentListener(this);
+		
+		// cycle terrain entry
 		add(labterrain);
 		add(terrain);
 		terrain.setEditable(false);
+		terrain.setFocusable(false);
+		terrain.getDocument().addDocumentListener(this);
+		
+		// cycle tempo entry
 		add(labtempo);
 		add(tempo);
 		tempo.setEditable(false);
+		tempo.setFocusable(false);
+		tempo.getDocument().addDocumentListener(this);
+		
+		// add entry button
 		add(addR);
+		addR.setEnabled(false);
 		addR.addActionListener(this);
+		
+		// look up latest entry by date button
 		add(lookUpByDate);
 		lookUpByDate.setEnabled(false);
 		lookUpByDate.addActionListener(this);
+		
+		// find all entries by date button
 		add(findAllByDate);
 		findAllByDate.setEnabled(false);
 		findAllByDate.addActionListener(this);
+		
+		// find all entries by name button
 		add(findAllByName);
 		findAllByName.setEnabled(false);
 		findAllByName.addActionListener(this);
+		
+		// remove entry button
 		add(remove);
 		remove.setEnabled(false);
 		remove.addActionListener(this);
+		
+		// text output
 		add(outputArea);
 		outputArea.setEditable(false);
+		
+		// window settings
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setSize(500, 200);
+		setSize(750, 300);
 		setVisible(true);
+		
+		// clear the display
 		blankDisplay();
-
-		// To save typing in new entries while testing, uncomment
-		// the following lines (or add your own test cases)
-
 	} // constructor
 
 	// listen for and respond to GUI events
@@ -160,6 +221,95 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 
 	} // actionPerformed
 
+	@Override
+	public void insertUpdate(DocumentEvent e) {
+		boolean hasName = name.getText().length() > 0;
+		boolean hasDate = day.getText().length() > 0 && month.getText().length() > 0 && year.getText().length() > 0;
+		boolean hasTime = hours.getText().length() > 0 && mins.getText().length() > 0 && secs.getText().length() > 0;
+		boolean hasDist = dist.getText().length() > 0;
+		boolean hasRunDetails = hasName && hasDate && hasTime && hasDist;
+		boolean hasSprintDetails = hasRunDetails && reps.getText().length() > 0 && rec.getText().length() > 0;
+		boolean hasCycleDetails = hasRunDetails && terrain.getText().length() > 0 && tempo.getText().length() > 0;
+		boolean hasSwimDetails = hasRunDetails && where.getText().length() > 0;
+		
+		switch(selectedEntryType) {
+			case "run":
+				if(hasRunDetails)
+					addR.setEnabled(true);
+				break;
+			case "sprint":
+				if(hasSprintDetails)
+					addR.setEnabled(true);
+				break;
+			case "cycle":
+				if(hasCycleDetails)
+					addR.setEnabled(true);
+				break;
+			case "swim":
+				if(hasSwimDetails)
+						addR.setEnabled(true);
+				break;
+		}
+		if (!myAthletes.isEmpty()) {
+			if (hasDate) {
+				lookUpByDate.setEnabled(true);
+				findAllByDate.setEnabled(true);
+			}
+			if (hasName) {
+				findAllByName.setEnabled(true);
+			}
+			if (hasName && hasDate) {
+				remove.setEnabled(true);
+			}
+		}
+	}
+
+	@Override
+	public void removeUpdate(DocumentEvent e) {
+		boolean hasName = name.getText().length() > 0;
+		boolean hasDate = day.getText().length() > 0 && month.getText().length() > 0 && year.getText().length() > 0;
+		boolean hasTime = hours.getText().length() > 0 && mins.getText().length() > 0 && secs.getText().length() > 0;
+		boolean hasDist = dist.getText().length() > 0;
+		boolean hasRunDetails = hasName && hasDate && hasTime && hasDist;
+		boolean hasSprintDetails = hasRunDetails && reps.getText().length() > 0 && rec.getText().length() > 0;
+		boolean hasCycleDetails = hasRunDetails && terrain.getText().length() > 0 && tempo.getText().length() > 0;
+		boolean hasSwimDetails = hasRunDetails && where.getText().length() > 0;
+		
+		switch(selectedEntryType) {
+			case "run":
+				if(!hasRunDetails)
+					addR.setEnabled(false);
+				break;
+			case "sprint":
+				if(!hasSprintDetails)
+					addR.setEnabled(false);
+				break;
+			case "cycle":
+				if(!hasCycleDetails)
+					addR.setEnabled(false);
+				break;
+			case "swim":
+				if(!hasSwimDetails)
+						addR.setEnabled(false);
+				break;
+		}
+		if (!myAthletes.isEmpty()) {
+			if (!hasDate) {
+				lookUpByDate.setEnabled(false);
+				findAllByDate.setEnabled(false);
+			}
+			if (!hasName) {
+				findAllByName.setEnabled(false);
+			}
+			if (!hasName && !hasDate) {
+				remove.setEnabled(false);
+			}
+		}
+	}
+
+	@Override
+	public void changedUpdate(DocumentEvent e) {}
+	
 	/**
 	 * Switches the GUI elements on or off depending on the value selected in the "selection" combo box.
 	 * 
@@ -169,35 +319,54 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 		JComboBox<String> selec = (JComboBox<String>) event.getSource();
 		if (selec.getSelectedItem().equals("Run")) {
 			reps.setEditable(false);
+			reps.setFocusable(false);
 			labdist.setText("  Distance (km):");
 			rec.setEditable(false);
+			rec.setFocusable(false);
 			where.setEditable(false);
+			where.setFocusable(false);
 			terrain.setEditable(false);
+			terrain.setFocusable(false);
 			tempo.setEditable(false);
+			tempo.setFocusable(false);
 			selectedEntryType = "run";
 		} else if (selec.getSelectedItem().equals("Sprint")) {
 			reps.setEditable(true);
+			reps.setFocusable(true);
 			labdist.setText("x Distance (m):");
 			rec.setEditable(true);
+			rec.setFocusable(true);
 			where.setEditable(false);
+			where.setFocusable(false);
 			terrain.setEditable(false);
+			terrain.setFocusable(false);
 			tempo.setEditable(false);
+			tempo.setFocusable(false);
 			selectedEntryType = "sprint";
 		} else if (selec.getSelectedItem().equals("Cycle")) {
 			reps.setEditable(false);
+			reps.setFocusable(false);
 			labdist.setText("  Distance (km):");
 			rec.setEditable(false);
+			rec.setFocusable(false);
 			where.setEditable(false);
 			terrain.setEditable(true);
+			terrain.setFocusable(true);
 			tempo.setEditable(true);
+			tempo.setFocusable(true);
 			selectedEntryType = "cycle";
 		} else {
 			reps.setEditable(false);
+			reps.setFocusable(false);
 			labdist.setText("  Distance (km):");
 			rec.setEditable(false);
+			rec.setFocusable(false);
 			where.setEditable(true);
+			where.setFocusable(true);
 			terrain.setEditable(false);
+			terrain.setFocusable(false);
 			tempo.setEditable(false);
+			tempo.setFocusable(false);
 			selectedEntryType = "swim";
 		}
 	}
@@ -310,10 +479,6 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 
 				myAthletes.addEntry(e);
 				message = "Record added successfully\n";
-				lookUpByDate.setEnabled(true);
-				findAllByDate.setEnabled(true);
-				findAllByName.setEnabled(true);
-				remove.setEnabled(true);
 			}
 		} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
 			message += "ERROR: Please make sure valid values are entered into all fields.\n";
@@ -430,5 +595,8 @@ public class TrainingRecordGUI extends JFrame implements ActionListener {
 		secs.setText(String.valueOf(ent.getSec()));
 		dist.setText(String.valueOf(ent.getDistance()));
 	}
+
+
+
 
 } // TrainingRecordGUI

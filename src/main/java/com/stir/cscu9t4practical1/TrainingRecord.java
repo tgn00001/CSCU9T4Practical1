@@ -95,7 +95,7 @@ public class TrainingRecord {
 	public String findAllEntriesForName(String searchString) {
 		ListIterator<Entry> iter = tr.listIterator();
 		if (searchString.contentEquals(""))
-			return "ERROR: Please enter a name to search for.";
+			return "ERROR: please enter a name to search for.";
 		String  result = "";
 		Pattern p = Pattern.compile(".*" + searchString.toLowerCase() + ".*");
 		while (iter.hasNext()) {
@@ -133,21 +133,29 @@ public class TrainingRecord {
 	 * @return Diagnostic message.
 	 */
 	public String removeEntry(String n, int d, int m, int y) {
-			ListIterator<Entry> iter = tr.listIterator();
-			boolean removed = false;
-			String toBeRemoved = n + " on " + d + "/" + m + "/" + y;
-			while (iter.hasNext()) {
-				Entry current = iter.next();
-				if (current.getName().equals(n) && current.getDay() == d && current.getMonth() == m && current.getYear() == y) {
-					iter.remove();
-					removed = true;
-				}
+		ListIterator<Entry> iter = tr.listIterator();
+		boolean removed = false;
+		String toBeRemoved = n + " on " + d + "/" + m + "/" + y;
+		while (iter.hasNext()) {
+			Entry current = iter.next();
+			if (current.getName().equals(n) && current.getDay() == d && current.getMonth() == m && current.getYear() == y) {
+				iter.remove();
+				removed = true;
 			}
-			if (!removed) {
-				return "No entry found for " + toBeRemoved;
-			}
-			else return "Removed entry for " + toBeRemoved;
-			
+		}
+		if (!removed) {
+			return "No entry found for " + toBeRemoved;
+		}
+		else return "Removed entry for " + toBeRemoved;
+	}
+	
+	/**
+	 * Checks whether or not the record is empty.
+	 * 
+	 * @return true if the record has no entries, false if it does
+	 */
+	public boolean isEmpty() {
+		return tr.isEmpty();
 	}
 
 } // TrainingRecord
