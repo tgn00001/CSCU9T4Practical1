@@ -7,6 +7,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -24,32 +26,40 @@ public class TrainingRecordGUI extends JFrame implements ActionListener, Documen
 	private JTextField dist = new JTextField(4);
 	private JTextField rec = new JTextField(2);
 	private JTextField where = new JTextField(10);
-	private JTextField terrain = new JTextField(15);
+	private JTextField terrain = new JTextField(10);
 	private JTextField tempo = new JTextField(10);
-	private JLabel labtype = new JLabel("Entry type:");
-	private JLabel labn = new JLabel(" Name:");
-	private JLabel labd = new JLabel(" Day:");
-	private JLabel labm = new JLabel(" Month:");
-	private JLabel laby = new JLabel(" Year:");
-	private JLabel labh = new JLabel(" Hours:");
-	private JLabel labmm = new JLabel(" Mins:");
-	private JLabel labs = new JLabel(" Secs:");
-	private JLabel labreps = new JLabel(" Repetitions:");
-	private JLabel labdist = new JLabel("x Distance (km):");
-	private JLabel labrec = new JLabel("Recovery (mins):");
-	private JLabel labwhere = new JLabel("Location: ");
-	private JLabel labterrain = new JLabel("Terrain: ");
-	private JLabel labtempo = new JLabel("Tempo: ");
+	private JLabel labtype = new JLabel("Entry type");
+	private JLabel labn = new JLabel("Name");
+	private JLabel labd = new JLabel("Day");
+	private JLabel labm = new JLabel("Month");
+	private JLabel laby = new JLabel("Year");
+	private JLabel labh = new JLabel("Hours");
+	private JLabel labmm = new JLabel("Mins");
+	private JLabel labs = new JLabel("Secs");
+	private JLabel labreps = new JLabel("Repetitions");
+	private JLabel labdist = new JLabel("Distance (km)");
+	private JLabel labrec = new JLabel("Recovery (mins)");
+	private JLabel labwhere = new JLabel("Location");
+	private JLabel labterrain = new JLabel("Terrain");
+	private JLabel labtempo = new JLabel("Tempo");
 	private JButton addR = new JButton("Add");
 	private JButton lookUpByDate = new JButton("Look Up");
 	private JButton findAllByDate = new JButton("Find All By Date");
 	private JButton findAllByName = new JButton("Find All By Name");
 	private JButton remove = new JButton("Remove");
-
-	private TrainingRecord myAthletes = new TrainingRecord();
-
 	private JTextArea outputArea = new JTextArea(5, 50);
-
+	
+	private JPanel mainPanel = new JPanel();
+	private Border border = new EmptyBorder(20, 20, 20, 20);
+	private Box mainBox = new Box(BoxLayout.Y_AXIS);
+	private JPanel topPanel = new JPanel();
+	private JPanel detailsPanel = new JPanel(new GridLayout(8,3));
+	private JPanel outputPanel = new JPanel();
+	private JPanel buttonPanel = new JPanel();	
+	
+	Font font =  new Font(Font.SANS_SERIF, Font.PLAIN, 30);
+	
+	private TrainingRecord myAthletes = new TrainingRecord();
 	private String[] entryTypes = { "Run", "Sprint", "Cycle", "Swim" };
 	private JComboBox<String> selection = new JComboBox<String>(entryTypes);
 	private String selectedEntryType = "run";
@@ -62,128 +72,180 @@ public class TrainingRecordGUI extends JFrame implements ActionListener, Documen
 	// set up the GUI
 	public TrainingRecordGUI() {
 		super("Training Record");
-		setLayout(new FlowLayout());
+		
+		add(mainPanel);
+		mainPanel.setBorder(border);
+		mainPanel.add(mainBox);
+		mainBox.add(topPanel);
+		mainBox.add(detailsPanel);
+		mainBox.add(outputPanel);
+		mainBox.add(buttonPanel);
 		
 		// entry type selection
-		add(labtype);
-		add(selection);
+		labtype.setFont(font);
+		topPanel.add(labtype);
+		selection.setFont(font);
+		topPanel.add(selection);
 		selection.addActionListener(this);
 		
 		// athlete name entry
-		add(labn);
-		add(name);
+		labn.setFont(font);
+		name.setFont(font);
+		topPanel.add(labn);
+		topPanel.add(name);
 		name.setEditable(true);
 		name.getDocument().addDocumentListener(this);
 		
-		// day entry
-		add(labd);
-		add(day);
+		// date labels
+		labd.setFont(font);
+		labm.setFont(font);
+		laby.setFont(font);
+		detailsPanel.add(labd);
+		detailsPanel.add(labm);
+		detailsPanel.add(laby);
+		
+		//day entry
+		day.setFont(font);
+		detailsPanel.add(day);
 		day.setEditable(true);
 		day.getDocument().addDocumentListener(this);
 		
 		//month entry
-		add(labm);
-		add(month);
+		month.setFont(font);
+		detailsPanel.add(month);
 		month.setEditable(true);
 		month.getDocument().addDocumentListener(this);
 		
 		// year entry
-		add(laby);
-		add(year);
+		year.setFont(font);
+		detailsPanel.add(year);
 		year.setEditable(true);
 		year.getDocument().addDocumentListener(this);
 		
+		// time labels
+		labh.setFont(font);
+		detailsPanel.add(labh);
+		labmm.setFont(font);
+		detailsPanel.add(labmm);
+		labs.setFont(font);
+		detailsPanel.add(labs);
+		
 		// hour entry
-		add(labh);
-		add(hours);
+		hours.setFont(font);
+		detailsPanel.add(hours);
 		hours.setEditable(true);
 		hours.getDocument().addDocumentListener(this);
 		
 		// minute entry
-		add(labmm);
-		add(mins);
+		mins.setFont(font);
+		detailsPanel.add(mins);
 		mins.setEditable(true);
 		mins.getDocument().addDocumentListener(this);
 		
 		// second entry
-		add(labs);
-		add(secs);
+		secs.setFont(font);
+		detailsPanel.add(secs);
 		secs.setEditable(true);
 		secs.getDocument().addDocumentListener(this);
 		
+		// row three labels
+		labreps.setFont(font);
+		detailsPanel.add(labreps);
+		labdist.setFont(font);
+		detailsPanel.add(labdist);
+		labrec.setFont(font);
+		detailsPanel.add(labrec);
+		
 		// sprint repetitions entry
-		add(labreps);
-		add(reps);
+		reps.setFont(font);
+		detailsPanel.add(reps);
 		reps.setEditable(false);
 		reps.setFocusable(false);
 		reps.getDocument().addDocumentListener(this);
 		
 		// distance entry
-		add(labdist);
-		add(dist);
+		dist.setFont(font);
+		detailsPanel.add(dist);
 		dist.setEditable(true);
 		dist.getDocument().addDocumentListener(this);
 		
 		// sprint recovery time entry
-		add(labrec);
-		add(rec);
+		rec.setFont(font);
+		detailsPanel.add(rec);
 		rec.setEditable(false);
 		rec.setFocusable(false);
 		rec.getDocument().addDocumentListener(this);
 		
+		// row four labels
+		labwhere.setFont(font);
+		detailsPanel.add(labwhere);
+		labterrain.setFont(font);
+		detailsPanel.add(labterrain);
+		labtempo.setFont(font);
+		detailsPanel.add(labtempo);
+		
 		// swimming location entry
-		add(labwhere);
-		add(where);
+		where.setFont(font);
+		detailsPanel.add(where);
 		where.setEditable(false);
 		where.setFocusable(false);
 		where.getDocument().addDocumentListener(this);
 		
 		// cycle terrain entry
-		add(labterrain);
-		add(terrain);
+		terrain.setFont(font);
+		detailsPanel.add(terrain);
 		terrain.setEditable(false);
 		terrain.setFocusable(false);
 		terrain.getDocument().addDocumentListener(this);
 		
 		// cycle tempo entry
-		add(labtempo);
-		add(tempo);
+		tempo.setFont(font);
+		detailsPanel.add(tempo);
 		tempo.setEditable(false);
 		tempo.setFocusable(false);
 		tempo.getDocument().addDocumentListener(this);
 		
+		// text output
+		outputArea.setFont(font);
+		outputArea.setEditable(false);
+		outputArea.setFocusable(false);
+		outputArea.setLineWrap(true);
+		outputPanel.add(outputArea);
+				
 		// add entry button
-		add(addR);
+		addR.setFont(font);
+		buttonPanel.add(addR);
 		addR.setEnabled(false);
 		addR.addActionListener(this);
 		
 		// look up latest entry by date button
-		add(lookUpByDate);
+		lookUpByDate.setFont(font);
+		buttonPanel.add(lookUpByDate);
 		lookUpByDate.setEnabled(false);
 		lookUpByDate.addActionListener(this);
 		
 		// find all entries by date button
-		add(findAllByDate);
+		findAllByDate.setFont(font);
+		buttonPanel.add(findAllByDate);
 		findAllByDate.setEnabled(false);
 		findAllByDate.addActionListener(this);
 		
 		// find all entries by name button
-		add(findAllByName);
+		findAllByName.setFont(font);
+		buttonPanel.add(findAllByName);
 		findAllByName.setEnabled(false);
 		findAllByName.addActionListener(this);
 		
 		// remove entry button
-		add(remove);
+		remove.setFont(font);
+		buttonPanel.add(remove);
 		remove.setEnabled(false);
 		remove.addActionListener(this);
 		
-		// text output
-		add(outputArea);
-		outputArea.setEditable(false);
-		
 		// window settings
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setSize(750, 300);
+		pack();
+		setLocationRelativeTo(null);
 		setVisible(true);
 		
 		// clear the display
@@ -320,7 +382,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener, Documen
 		if (selec.getSelectedItem().equals("Run")) {
 			reps.setEditable(false);
 			reps.setFocusable(false);
-			labdist.setText("  Distance (km):");
+			labdist.setText("Distance (km)");
 			rec.setEditable(false);
 			rec.setFocusable(false);
 			where.setEditable(false);
@@ -333,7 +395,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener, Documen
 		} else if (selec.getSelectedItem().equals("Sprint")) {
 			reps.setEditable(true);
 			reps.setFocusable(true);
-			labdist.setText("x Distance (m):");
+			labdist.setText("Distance (m)");
 			rec.setEditable(true);
 			rec.setFocusable(true);
 			where.setEditable(false);
@@ -346,7 +408,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener, Documen
 		} else if (selec.getSelectedItem().equals("Cycle")) {
 			reps.setEditable(false);
 			reps.setFocusable(false);
-			labdist.setText("  Distance (km):");
+			labdist.setText("Distance (km)");
 			rec.setEditable(false);
 			rec.setFocusable(false);
 			where.setEditable(false);
@@ -358,7 +420,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener, Documen
 		} else {
 			reps.setEditable(false);
 			reps.setFocusable(false);
-			labdist.setText("  Distance (km):");
+			labdist.setText("Distance (km)");
 			rec.setEditable(false);
 			rec.setFocusable(false);
 			where.setEditable(true);
