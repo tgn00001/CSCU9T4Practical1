@@ -86,22 +86,25 @@ public class TrainingRecordGUITest {
 		System.out.println("addEntry");
 		TrainingRecordGUI instance = new TrainingRecordGUI();
 		Entry entry = new RunEntry("Alice", 1, 2, 2003, 0, 16, 7, 3);
+		instance.blankDisplay();
 		instance.fillDisplay(entry);
-		String message = instance.addEntry("generic");
+		String message = instance.addEntry("run");
 		System.out.println(message);
 		assertEquals(message, "Record added successfully\n");
 		
 		// test name validation
-		entry = new RunEntry("", 1, 2, 2003, 0, 16, 7, 3);
+		entry = new RunEntry("", 22, 2, 2003, 0, 16, 7, 3);
+		instance.blankDisplay();
 		instance.fillDisplay(entry);
-		message = instance.addEntry("generic");
+		message = instance.addEntry("run");
 		System.out.println(message);
 		assertEquals("ERROR: please enter a name\n", message);
 		
 		// test distance validation
-		entry = new RunEntry("Belice", 1, 2, 2003, 0, 16, 7, -3);
+		entry = new RunEntry("Belice", 3, 2, 2003, 0, 16, 7, -3);
+		instance.blankDisplay();
 		instance.fillDisplay(entry);
-		message = instance.addEntry("generic");
+		message = instance.addEntry("run");
 		System.out.println(message);
 		assertEquals(message, "ERROR: value for distance must be a positive number.\n");
 	}
@@ -114,7 +117,7 @@ public class TrainingRecordGUITest {
 		System.out.println("Check if you have added the buttons");
 		TrainingRecordGUI instance = new TrainingRecordGUI();
 		Class<?> instanceClass = instance.getClass();
-		String[] expectedFields = {"addR", "lookUpByDate", "findAllByDate", "findAllByName", "remove" }; // add RemoveEntry when it is ready
+		String[] expectedFields = {"addR", "lookUpByDate", "findAllByDate", "findAllByName", "remove" };
 		Field fields[] = instanceClass.getDeclaredFields();
 		int found = 0;
 		for (Field field : fields) {
