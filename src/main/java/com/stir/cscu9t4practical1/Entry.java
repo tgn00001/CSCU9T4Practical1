@@ -1,6 +1,7 @@
 // This class holds information about a single training session
 package com.stir.cscu9t4practical1;
 
+import java.time.LocalDate;
 import java.util.Calendar;
 
 public abstract class Entry {
@@ -33,6 +34,10 @@ public abstract class Entry {
 		return dateAndTime.get(Calendar.YEAR);
 	} // getYear
 
+	public LocalDate getDate() {
+		return LocalDate.of(getYear(), getMonth(), getDay());
+	}
+	
 	public int getHour() {
 		return dateAndTime.get(Calendar.HOUR);
 	} // getHour

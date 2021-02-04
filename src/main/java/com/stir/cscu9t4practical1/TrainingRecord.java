@@ -1,6 +1,8 @@
 // An implementation of a Training Record as an ArrayList
 package com.stir.cscu9t4practical1;
 
+import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -126,6 +128,7 @@ public class TrainingRecord {
 
 	/**
 	 * Removes the entry for the given name on the given date.
+	 * 
 	 * @param n name of the athlete
 	 * @param d day
 	 * @param m month
@@ -147,6 +150,55 @@ public class TrainingRecord {
 			return "No entry found for " + toBeRemoved;
 		}
 		else return "Removed entry for " + toBeRemoved;
+	}
+	
+	/**
+	 * Finds all entries for a given name in the last week, and sums their distance values.
+	 * 
+	 * @param name the name to search for
+	 * @return a String of all entries with this name in the last week, and the total distance of all entries
+	 */
+	public String getLastWeeksEntries(String name) {
+		// LocalDate only stores dates, using a class that stores time as well (like Calendar) complicates the comparison
+		LocalDate today = LocalDate.now();
+		LocalDate lastWeek = today.minusWeeks(1);
+		
+		ListIterator<Entry> iter = tr.listIterator();
+		if (name.contentEquals(""))
+			return "ERROR: please enter a name to search for.";
+		String  result = "";			
+		double totalDistance = 0;		// the sum of all distances for the entries found
+		
+		Pattern p = Pattern.compile(".*" + name.toLowerCase() + ".*");
+		while (iter.hasNext()) {
+			Entry current = iter.next();
+			Matcher m = p.matcher(current.getName().toLowerCase());
+			
+			// only count an entry if it matches the name AND its date is a week ago (+1 day) at the earliest and today at the latest
+			if (m.find() && (current.getDate().compareTo(today) <= 0) && (current.getDate().compareTo(lastWeek) > 0)) {
+				result += current.getEntry();
+				
+				// add distance to totalDistance, keeping in mind that SprintEntry stores m, not km
+				if (current instanceof SprintEntry)	totalDistance += ((SprintEntry) current).getRepetitions() * (current.getDistance() / 1000);
+				else 								totalDistance += current.getDistance();
+			}
+		}
+		if (result.equals(""))	return "No entries found for \"" + name + "\"";
+		else					{
+			// format output so precision is only to the metre
+			DecimalFormat kmFormat = new DecimalFormat("0.000");
+			String km = kmFormat.format(totalDistance);
+			
+			// convert distance to m, format m output as well
+			totalDistance *= 1000;
+			DecimalFormat mFormat = new DecimalFormat("0");
+			String m = mFormat.format(totalDistance);
+			
+			// output both km and m
+			result += "Weekly distance is " + km + " km, or " + m + " m.\n";
+			
+			return result;
+		}
 	}
 	
 	/**

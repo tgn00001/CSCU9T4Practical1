@@ -47,6 +47,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener, Documen
 	private JButton findAllByDate = new JButton("Find All By Date");
 	private JButton findAllByName = new JButton("Find All By Name");
 	private JButton remove = new JButton("Remove");
+	private JButton weeklyDistance = new JButton("Weekly Distance?");
 	private JTextArea outputArea = new JTextArea(5, 50);
 	private JScrollPane outputScrollPane = new JScrollPane(outputArea);
 	
@@ -244,6 +245,12 @@ public class TrainingRecordGUI extends JFrame implements ActionListener, Documen
 		remove.setEnabled(false);
 		remove.addActionListener(this);
 		
+		// weekly distance? button
+		weeklyDistance.setFont(font);
+		buttonPanel.add(weeklyDistance);
+		weeklyDistance.setEnabled(false);
+		weeklyDistance.addActionListener(this);
+		
 		// window settings
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		pack();
@@ -274,6 +281,9 @@ public class TrainingRecordGUI extends JFrame implements ActionListener, Documen
 		}
 		if (event.getSource() == remove) {
 			message = removeEntry();
+		}
+		if (event.getSource() == weeklyDistance) {
+			message = weeklyDistance();
 		}
 		outputArea.setText(message);
 
@@ -321,6 +331,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener, Documen
 			}
 			if (hasName) {
 				findAllByName.setEnabled(true);
+				weeklyDistance.setEnabled(true);
 			}
 			if (hasName && hasDate) {
 				remove.setEnabled(true);
@@ -364,6 +375,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener, Documen
 			}
 			if (!hasName) {
 				findAllByName.setEnabled(false);
+				weeklyDistance.setEnabled(false);
 			}
 			if (!hasName && !hasDate) {
 				remove.setEnabled(false);
@@ -626,6 +638,15 @@ public class TrainingRecordGUI extends JFrame implements ActionListener, Documen
 		} catch (NumberFormatException e) {
 			return "ERROR: No valid date entered.";
 		}
+	}
+	
+	/**
+	 * Finds all entries for the given name in the last week.
+	 * 
+	 * @return A text list of all entries for the name input by the user within the last week.
+	 */
+	private String weeklyDistance() {
+		return myAthletes.getLastWeeksEntries(name.getText());
 	}
 	
 	/**
