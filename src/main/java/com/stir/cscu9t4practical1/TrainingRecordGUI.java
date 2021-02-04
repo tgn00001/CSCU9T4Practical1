@@ -48,6 +48,7 @@ public class TrainingRecordGUI extends JFrame implements ActionListener, Documen
 	private JButton findAllByName = new JButton("Find All By Name");
 	private JButton remove = new JButton("Remove");
 	private JTextArea outputArea = new JTextArea(5, 50);
+	private JScrollPane outputScrollPane = new JScrollPane(outputArea);
 	
 	private JPanel mainPanel = new JPanel();
 	private Border border = new EmptyBorder(20, 20, 20, 20);
@@ -210,7 +211,8 @@ public class TrainingRecordGUI extends JFrame implements ActionListener, Documen
 		outputArea.setEditable(false);
 		outputArea.setFocusable(false);
 		outputArea.setLineWrap(true);
-		outputPanel.add(outputArea);
+		outputArea.setWrapStyleWord(true);
+		outputPanel.add(outputScrollPane);
 				
 		// add entry button
 		addR.setFont(font);

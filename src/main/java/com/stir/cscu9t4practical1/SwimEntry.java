@@ -7,7 +7,7 @@ public class SwimEntry extends Entry {
 		super(n, d, m, y, h, min, s, dist);
 		if (where.equals("outdoors")) this.setWhere("outdoors");
 		else if (where.equals("pool")) this.setWhere("in a pool");
-		else this.where = "where";
+		else this.where = where;
 	}
 
 	/**
