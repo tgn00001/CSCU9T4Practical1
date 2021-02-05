@@ -85,28 +85,34 @@ public class TrainingRecordGUITest {
 	public void testAddEntry() {
 		System.out.println("addEntry");
 		TrainingRecordGUI instance = new TrainingRecordGUI();
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		Entry entry = new RunEntry("Alice", 1, 2, 2003, 0, 16, 7, 3);
 		instance.blankDisplay();
 		instance.fillDisplay(entry);
-		String message = instance.addEntry("run");
-		System.out.println(message);
-		assertEquals(message, "Record added successfully\n");
+		String message1 = instance.addEntry("run");
+		System.out.println(message1);
 		
 		// test name validation
 		entry = new RunEntry("", 22, 2, 2003, 0, 16, 7, 3);
 		instance.blankDisplay();
 		instance.fillDisplay(entry);
-		message = instance.addEntry("run");
-		System.out.println(message);
-		assertEquals("ERROR: please enter a name\n", message);
+		String message2 = instance.addEntry("run");
+		System.out.println(message2);
 		
 		// test distance validation
 		entry = new RunEntry("Belice", 3, 2, 2003, 0, 16, 7, -3);
 		instance.blankDisplay();
 		instance.fillDisplay(entry);
-		message = instance.addEntry("run");
-		System.out.println(message);
-		assertEquals(message, "ERROR: value for distance must be a positive number.\n");
+		String message3 = instance.addEntry("run");
+		System.out.println(message3);
+		
+		assertEquals("Record added successfully\n", message1);
+		assertEquals("ERROR: please enter a name\n", message2);
+		assertEquals("ERROR: value for distance must be a positive number.\n", message3);
 	}
 
 	/**
@@ -117,7 +123,7 @@ public class TrainingRecordGUITest {
 		System.out.println("Check if you have added the buttons");
 		TrainingRecordGUI instance = new TrainingRecordGUI();
 		Class<?> instanceClass = instance.getClass();
-		String[] expectedFields = {"addR", "lookUpByDate", "findAllByDate", "findAllByName", "remove" };
+		String[] expectedFields = {"addR", "lookUpByDate", "findAllByDate", "findAllByName", "remove", "weeklyDistance" };
 		Field fields[] = instanceClass.getDeclaredFields();
 		int found = 0;
 		for (Field field : fields) {
